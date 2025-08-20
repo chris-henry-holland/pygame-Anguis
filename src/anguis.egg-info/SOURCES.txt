@@ -1,0 +1,13 @@
+LICENSE
+README.md
+pyproject.toml
+src/anguis/__main__.py
+src/anguis/bots.py
+src/anguis/game.py
+src/anguis/gameplay.py
+src/anguis/utils.py
+src/anguis.egg-info/PKG-INFO
+src/anguis.egg-info/SOURCES.txt
+src/anguis.egg-info/dependency_links.txt
+src/anguis.egg-info/requires.txt
+src/anguis.egg-info/top_level.txt
