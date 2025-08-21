@@ -1,10 +1,12 @@
 # library/src/anguis/gameplay.py
 
+from __future__ import annotations
+
+from typing import Union, Tuple, List, Set, Dict, Optional, Callable, Any, Generator, TYPE_CHECKING
+
 from collections import deque
 
 from sortedcontainers import SortedSet, SortedDict
-
-from typing import Union, Tuple, List, Set, Dict, Optional, Callable, Any, Generator
 
 import pygame as pg
 
@@ -305,10 +307,10 @@ class GamePlay:
 
     def __init__(
         self,
-        screen: Optional["pg.display"]=None,
+        screen: Optional[pg.Display]=None,
         head_size: int=25,
         arena_shape: Tuple[int, int]=(16, 15),
-        head_init_pos_func: Optional[Union[Tuple[int, int], Callable[["Gameplay"], Tuple[int, int]]]]=None,
+        head_init_pos_func: Optional[Union[Tuple[int, int], Callable[[GamePlay], Tuple[int, int]]]]=None,
         head_init_direct: Tuple[int, int]=(0, 1),
         move_rate: Real=15,
         n_frame_per_move: int=2,
@@ -782,21 +784,7 @@ class GamePlay:
             max_score //= 10
             max_n_dig += 1
         max_n_dig = max(max_n_dig, 1)
-        #nums = [str(d) * max_n_dig for d in range(10)]
         
-        """
-        num_max_width = self.arena_shape[0] * 0.1
-        num_max_width_pixel = num_max_width * self.head_size
-        num_anchor_rel_pos = (self.border[0][0] + self.arena_shape[0] - num_max_width, self.border[1][0] * 0.9)
-        num_anchor_rel_pos_pixel = tuple(x * self.head_size for x in num_anchor_rel_pos)
-        txt_max_width = self.arena_shape[0] * 0.3
-        txt_max_width_pixel = txt_max_width * self.head_size
-        txt_anchor_rel_pos = num_anchor_rel_pos
-        txt_anchor_rel_pos_pixel = tuple(x * self.head_size for x in txt_anchor_rel_pos)
-        
-        max_h = self.border[1][0] * 0.25
-        max_h_pixel = max_h * self.head_size
-        """
         max_h_pixel = self.score_text_max_height
 
         txt_max_width_pixel = self.score_text_number_max_width
@@ -956,29 +944,7 @@ class GamePlay:
         # Display the score
         self.score_text_number.text = str(score)
         self.score_text_number_img_constructor(self.screen)
-        """
-        text_list = []
-        #text_list.append(("Anguis", 2.5, (0, -3), "topleft",\
-        #                    True, named_colors_def["white"]))
-        #text_list.append((f"Score: {score}", 1.2, (0, -1.5),\
-        #                    "topright", True, named_colors_def["black"]))
         
-        for text_tup in text_list:
-            size_actual = text_tup[1] * self.head_size
-            text_rect = self.font.get_rect(text_tup[0],\
-                            size=size_actual)
-            # Checks if position of text is relative to just the
-            # arena or to the whole screen
-            if text_tup[4]: ref_obj = self.arena
-            else: ref_obj = screen.get_rect()
-            offset = [x * self.head_size for x in text_tup[2]]
-            ref_pos = tuple(x + y for x, y in\
-                        zip(offset, getattr(ref_obj, text_tup[3])))
-            setattr(text_rect, text_tup[3],\
-                        ref_pos)
-            self.font.render_to(self.screen, text_rect,\
-                        text_tup[0], text_tup[5], size=size_actual)
-        """
         self.head.drawHeadAndTail()
         self.fruits.draw()
         
@@ -1048,10 +1014,13 @@ class GamePlay:
         if res is None:
             snake_qu = deque(x.pos_flat for x in self.head.tail.tail_qu)
             snake_qu.append(self.head.pos_flat)
-            res = TailChaserBot(self.arena_shape, self.head.pos_flat,\
-                    head_direct=self.head.mv,\
-                    fruits=set(self.head.fruits.fruit_dict.keys()),\
-                    snake_qu=snake_qu)
+            res = TailChaserBot(
+                self.arena_shape,
+                self.head.pos_flat,
+                head_direct=self.head.mv,
+                fruits=set(self.head.fruits.fruit_dict.keys()),
+                snake_qu=snake_qu,
+            )
             self._bot = res
         return res
     
@@ -1062,7 +1031,7 @@ class GamePlay:
         (running, quit, to_pause) =\
                     self.updateKeyBuffer(key_buffer_qu)
         if to_pause:
-            quit = self.pause()
+            _, quit = self.pause()
         if quit: running = False
         while key_buffer_qu: key_buffer_qu.popleft()
         return running, quit, res
@@ -1079,7 +1048,7 @@ class GamePlay:
                     self.updateKeyBuffer(key_buffer_qu)
             if not running: break
             if to_pause:
-                restart, quit = self.pause()
+                _, quit = self.pause()
                 if quit:
                     running = False
                     break

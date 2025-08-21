@@ -1,9 +1,13 @@
 # library/src/anguis/bots.py
 
+from __future__ import annotations
+
+from typing import Union, Tuple, List, Set, Dict, Optional, Callable, Any, Generator, TYPE_CHECKING
+
 from collections import deque
 import random
 
-from typing import Union, Tuple, List, Set, Dict, Optional, Callable, Any, Generator
+
 
 from anguis.utils import UnionFind
 

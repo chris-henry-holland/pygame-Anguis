@@ -24,3 +24,6 @@ dependencies = [
     "pygame_display_component_classes @ git+https://github.com/chris-henry-holland/pygame-DisplayComponents",
 ]
 requires-python = ">=3.11"
+
+[project.scripts]
+play-anguis = "anguis.__main__:main"

@@ -1,0 +1,2 @@
+[console_scripts]
+play-anguis = anguis.__main__:main

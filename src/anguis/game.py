@@ -1,6 +1,8 @@
 # library/src/anguis/gameplay.py
 
-from typing import Union, Tuple, List, Set, Dict, Optional, Callable, Any
+from __future__ import annotations
+
+from typing import Union, Tuple, List, Set, Dict, Optional, Callable, Any, TYPE_CHECKING
 
 import pygame as pg
 
@@ -9,7 +11,6 @@ from pygame.locals import (
     K_DOWN,
 )
 
-#sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from pygame_display_component_classes import (
     enter_keys_def_glob,
     named_colors_def,
@@ -26,7 +27,7 @@ class Game:
         self,
         head_size: int=25,
         arena_shape: Tuple[int, int]=(16, 15),
-        head_init_pos_func: Optional[Union[Tuple[int, int], Callable[["Gameplay"], Tuple[int, int]]]]=None,
+        head_init_pos_func: Optional[Union[Tuple[int, int], Callable[[GamePlay], Tuple[int, int]]]]=None,
         head_init_direct: Tuple[int, int]=(0, 1),
         move_rate: float=15,
         n_frame_per_move: float=2,
@@ -161,18 +162,7 @@ class Game:
             outline_widths=((1,), (2,), (3,), 1),
             outline_colors=((named_colors_def["black"], 1), (named_colors_def["blue"], 1), 1, 1),
         )
-        """
-        menu_overlay.setButtons((0.5, 0.35), "midtop",\
-            (0.5, 0.55), wh_ratio_range=(0.1, 10),\
-            button_text_and_actions=button_text_and_actions,\
-            text_groups=button_text_groups,\
-            button_gap_rel_shape=(0.1, 0.1),\
-            font_colors=((named_colors_def["white"], 0.5), (named_colors_def["yellow"], 1), (named_colors_def["blue"], 1), (named_colors_def["green"], 1)),
-            text_borders_rel=((0.2, 0.2), (0.1, 0.1), 1, 0),\
-            fill_colors=(None, (named_colors_def["red"], 0.2), (named_colors_def["red"], 0.5), 2),\
-            outline_widths=((1,), (2,), (3,), 1),\
-            outline_colors=((named_colors_def["black"], 1), (named_colors_def["blue"], 1), 1, 1))
-        """
+        
         return main_menu_overlay
     
     @property
@@ -299,11 +289,6 @@ class Game:
             val_text_color=(named_colors_def["white"], 1),
         )
 
-        #button_text_groups = tuple((TextGroup([], max_height0=None, font=None, font_size=None, min_lowercase=True, text_global_asc_desc_chars=None),) for _ in range(4))
-        #button_text_and_actions =\
-        #        [[(("Play game", "center"), (lambda: (0, True, False, True, False))),\
-        #        (("Options", "center"), (lambda: (-1, True, False, True, False))),\
-        #        (("Exit", "center"), (lambda: (-1, True, False, False, True)))]]
         button_anchor_pos_tup = (("center",), 0, 0, 0)
         button_text_anchortype_and_actions = [
             [
@@ -436,18 +421,6 @@ class Game:
                                 self._arena_shape)
         return self._arena_dims
     
-    #@property
-    #def arena_ul(self):
-    #    # Position of the upper left corner of the arena
-    #    #print(f"getting arena_ul")
-    #    arena_ul = getattr(self, "_arena_ul", None)
-    #    if arena_ul is not None:
-    #        return arena_ul
-    #    self._arena_ul = ActualPosition([x[0] for x, y in\
-    #                    zip(self.border, self.arena_shape)],\
-    #                    scale=self.head_size)
-    #    return self._arena_ul
-    
     @property
     def screen_shape(self):
         screen_shape = getattr(self, "_screen_shape", None)
@@ -469,15 +442,6 @@ class Game:
             #self._screen = pg.display.set_mode(self.screen_shape)
             pg.display.set_caption("Anguis")
         return self._screen
-    
-    #@property
-    #def arena(self):
-    #    arena = getattr(self, "_arena", None)
-    #    if arena is not None:
-    #        return arena
-    #    self._arena = pg.draw.rect(self.screen, self.white,\
-    #                    [*self.arena_ul, *self.arena_dims])
-    #    return self._arena
     
     @property
     def n_fruit(self) -> int:
@@ -524,54 +488,7 @@ class Game:
             auto_fruitpos[-1].append(fruitpos_prov[1])
         self._auto_fruitpos = tuple(auto_fruitpos)
         return self._auto_fruitpos
-    """
-    def prep_menu(self, menu_name):
-        font_sizes = (2.5, 1.2)
-        text_dict_list = []
-        text_colors = (self.black, self.white)
-        if menu_name.strip().lower() == "main_menu":
-            text_dict_list = [{"text": "Main menu", "font": self.font,\
-                "font_size": font_sizes[0],\
-                "text_offset": (0, -4),\
-                "offset_anchors": ("center", "center"),\
-                "ref_obj": self.screen.get_rect(),\
-                "text_color": text_colors[0]}]
-            text_dict_list.append({"text": "Play game", "font": self.font,\
-                "font_size": font_sizes[1],\
-                "text_offset": (0, -1),\
-                "offset_anchors": ("center", "center"),\
-                "ref_obj": self.screen.get_rect(),\
-                "text_color": text_colors[1], "button_group": 0,\
-                "action": lambda: self.main_menu.run_gameplay()})
-            text_dict_list.append({"text": "Options", "font": self.font,\
-                "font_size": font_sizes[1],\
-                "text_offset": (0, 1),\
-                "offset_anchors": ("center", "center"),\
-                "ref_obj": self.screen.get_rect(),\
-                "text_color": text_colors[1], "button_group": 0})
-            text_dict_list.append({"text": "High scores", "font": self.font,\
-                "font_size": font_sizes[1],\
-                "text_offset": (0, 3),\
-                "offset_anchors": ("center", "center"),\
-                "ref_obj": self.screen.get_rect(),\
-                "text_color": text_colors[1], "button_group": 0})
-            text_dict_list.append({"text": "Exit", "font": self.font,\
-                "font_size": font_sizes[1],\
-                "text_offset": (0, 5),\
-                "offset_anchors": ("center", "center"),\
-                "ref_obj": self.screen.get_rect(),\
-                "text_color": text_colors[1], "button_group": 0,\
-                "action": lambda: self.main_menu.quit()})
-        
-        menu = Menus(self, text_dict_list,\
-            frm_rate=self.menu_frm_rate,\
-            overlay_color=self.menu_overlay_color,\
-            overlay_opacity=self.menu_overlay_opacity,\
-            button_border=self.button_border,\
-            nav_keys=self.menu_nav_keys)
-        setattr(self, menu_name, menu)
-        return menu
-    """
+    
     def mainMenuActionResolver(self, action: int) -> Tuple[bool, bool, bool, bool]:
         #print(f"action = {action}")
         if not action:
@@ -612,21 +529,6 @@ class Game:
         elif overlay_attr == "settings_menu_overlay":
             return self.settingsMenuActionResolver(action)
         return (False, False, True, False)
-        """
-        if overlay_attr != "main_menu_overlay" or action_output != 0:
-            return (-1, False, False, True, False)
-        gameplay = GamePlay(screen=self.screen, head_size=self.head_size, arena_shape=self.arena_shape,
-                head_init_pos=self.head_init_pos, head_init_direct=self.head_init_direct,
-                move_rate=self.move_rate, n_frame_per_move=self.n_frame_per_move,
-                n_fruit=self.n_fruit, border=self.border,
-                font=self.font, auto=False, navkeys=None)
-        score, retry, quit = gameplay.run()
-        if quit:
-            return (-1, True, True, False, True)
-        if retry:
-            return (0, True, True, True, False)
-        return (-1, True, True, True, False)
-        """
     
     def menuOverlay(self, overlay_attr: str) -> bool:
         
@@ -652,15 +554,6 @@ class Game:
                 #print(action)
                 ignore_subsequent, chng2, running2, quit2 = self.actionResolver(overlay_attr, action)
                 
-                #action_output, ignore_subsequent, chng2, running2, quit2 = action()
-                #if chng2: chng = True
-                #while action_output != -1 and running2 and not quit2:
-                #    print(action_output)
-                #    action_output, ignore_subsequent2, chng2, running2, quit2 = self.actionOutputResolver(overlay_attr, action_output)
-                #    if chng2: chng = True
-                #    if ignore_subsequent2: ignore_subsequent = True
-                #print(f"actions: restart = {restart2}, running = {running2}, quit = {quit2}")
-                #if restart2: restart = True
                 if chng2: chng = True
                 if not running2: running = False
                 if quit2: quit = True
