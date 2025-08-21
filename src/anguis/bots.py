@@ -7,8 +7,6 @@ from typing import Union, Tuple, List, Set, Dict, Optional, Callable, Any, Gener
 from collections import deque
 import random
 
-
-
 from anguis.utils import UnionFind
 
 class TailChaserBot:

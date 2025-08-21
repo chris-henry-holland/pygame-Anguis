@@ -10,7 +10,7 @@ version = "1.0.0"
 description = "Anguis, a snake clone game"
 readme = "README.md"
 authors = [{ name = "Christopher Holland", email = "chris.henry.holland@gmail.com" }]
-urls.Code = "https://github.com/chris-henry-holland/pygame-DisplayComponents"
+
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
@@ -24,6 +24,9 @@ dependencies = [
     "pygame_display_component_classes @ git+https://github.com/chris-henry-holland/pygame-DisplayComponents",
 ]
 requires-python = ">=3.11"
+
+[project.urls]
+Repository = https://github.com/chris-henry-holland/pygame-Anguis.git
 
 [project.scripts]
 play-anguis = "anguis.__main__:main"
